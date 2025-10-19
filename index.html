@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -49,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
@@ -56,6 +18,7 @@
             overflow: hidden;
             position: relative;
         }
+
         body::before {
             content: '';
             position: fixed;
@@ -67,6 +30,7 @@
             pointer-events: none;
             z-index: 1;
         }
+
         .container {
             min-height: 100vh;
             display: flex;
@@ -79,24 +43,29 @@
             z-index: 2;
             width: 100%;
         }
+
         .page {
             display: none;
             animation: fadeIn 0.8s ease-out;
             width: 100%;
         }
+
         .page.active {
             display: flex;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         h1 {
             font-size: clamp(1.5rem, 5vw, 2.5rem);
             color: #d63384;
             margin-bottom: clamp(20px, 8vw, 40px);
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
         .input-group {
             display: flex;
             flex-direction: column;
@@ -104,6 +73,7 @@
             max-width: 300px;
             width: 100%;
         }
+
         input {
             padding: 15px;
             border: 2px solid #ff69b4;
@@ -113,11 +83,13 @@
             background: rgba(255,255,255,0.9);
             transition: all 0.3s ease;
         }
+
         input:focus {
             outline: none;
             border-color: #d63384;
             transform: scale(1.02);
         }
+
         button {
             padding: 15px 30px;
             border: none;
@@ -129,21 +101,26 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         button:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(214, 51, 132, 0.4);
         }
+
         .error {
             color: #ff69b4;
             font-size: clamp(0.9rem, 3vw, 1rem);
             animation: shake 0.5s ease;
         }
+
         .hidden { display: none; }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
+
         /* PAGE 2 */
         .envelope-float {
             animation: floatUpDown 3s ease-in-out infinite;
@@ -151,40 +128,48 @@
             position: relative;
             display: block;
         }
+
         .envelope-img {
             width: clamp(160px, 30vw, 200px);
             filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
             animation: popUp 0.8s ease-out;
         }
+
         .gift-box {
             cursor: pointer;
             margin: 30px auto;
         }
+
         .box {
             font-size: clamp(4rem, 20vw, 8rem);
             animation: bounce 2s infinite;
             display: inline-block;
             padding: 20px;
         }
+
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
         }
+
         .gift-box p {
             font-size: clamp(0.9rem, 3vw, 1.1rem);
             color: #d63384;
             margin-top: 10px;
             opacity: 0.8;
         }
+
         @keyframes floatUpDown {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+
         @keyframes popUp {
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
         .heart-from-envelope {
             position: absolute;
             font-size: 18px;
@@ -192,10 +177,12 @@
             z-index: 10;
             pointer-events: none;
         }
+
         @keyframes heartFlyEnvelope {
             0% { transform: translateY(0) scale(0.5); opacity: 1; }
             100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
         }
+
         /* PAGE 3 */
         .envelope {
             width: 200px;
@@ -204,10 +191,12 @@
             margin: 30px auto;
             animation: openEnvelope 1s ease-out;
         }
+
         @keyframes openEnvelope {
             from { transform: scale(0) rotate(-10deg); }
             to { transform: scale(1) rotate(0); }
         }
+
         .card {
             position: absolute;
             top: 20px;
@@ -222,6 +211,7 @@
             width: 100%;
             max-width: 250px;
         }
+
         .choices {
             display: flex;
             gap: 15px;
@@ -231,40 +221,44 @@
             max-width: 300px;
             margin: 0 auto;
         }
+
         .btn-yes, .btn-no {
             min-width: 120px;
             padding: 12px 20px;
             flex: 1;
             max-width: 140px;
         }
+
         .btn-no {
             transition: transform 0.3s ease;
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
         }
+
         /* PAGE 4 - KHUNG TRẮNG + CHỮ ĐẸP */
         .magic-envelope {
             width: 280px;
-            height: auto;
+            height: 200px;
             position: relative;
             margin: 30px auto;
             cursor: pointer;
         }
+
         .envelope-body {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: auto;
-            min-height: 200px;
+            height: 100%;
             background: white;
             border: 3px solid #ff69b4;
             border-radius: 15px;
             overflow: hidden;
             z-index: 2;
         }
+
         .letter-content {
             padding: 20px;
-            height: auto;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -272,10 +266,12 @@
             transform: translateY(20px);
             transition: all 0.8s ease;
         }
+
         .magic-envelope.open .letter-content {
             opacity: 1;
             transform: translateY(0);
         }
+
         .typing-text {
             font-size: clamp(1.1rem, 3.5vw, 1.4rem);
             line-height: 1.6;
@@ -287,20 +283,24 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         @keyframes fadeInText {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+
         .cursor {
             display: inline-block;
             background: #d63384;
             width: 2px;
             animation: blink 1s infinite;
         }
+
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
         }
+
         .bears-container {
             display: flex;
             gap: clamp(20px, 5vw, 40px);
@@ -310,6 +310,7 @@
             max-width: 200px;
             margin-top: 20px;
         }
+
         .bear {
             width: clamp(60px, 15vw, 80px);
             height: clamp(60px, 15vw, 80px);
@@ -320,13 +321,17 @@
             justify-content: center;
             font-size: clamp(40px, 10vw, 50px);
         }
+
         .bear-left { animation-delay: 0s; }
         .bear-right { animation-delay: 0.5s; }
+
         @keyframes bearBounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+
         .bear:hover { transform: scale(1.1); }
+
         .heart-from-bear {
             position: absolute;
             font-size: 16px;
@@ -334,21 +339,25 @@
             animation: heartFlyUp 3s ease-out forwards;
             z-index: 10;
         }
+
         @keyframes heartFlyUp {
             0% { transform: translateY(0) scale(0); opacity: 1; }
             100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
         }
+
         .restart {
             margin-top: 20px;
             background: linear-gradient(45deg, #ff9a9e, #fecfef);
             border: 2px solid #d63384;
         }
+
         .heart {
             position: absolute;
             font-size: 20px;
             animation: float linear infinite;
             z-index: 1;
         }
+
         .close-btn {
             position: fixed !important;
             top: 20px !important;
@@ -365,10 +374,12 @@
             opacity: 1 !important;
             transition: all 0.3s ease;
         }
+
         .close-btn:hover {
             transform: scale(1.2) !important;
             background: #d63384 !important;
         }
+
         .particles {
             position: fixed;
             top: 0;
@@ -378,25 +389,29 @@
             pointer-events: none;
             z-index: 1;
         }
+
         .particle {
             position: absolute;
             font-size: 12px;
             animation: flowerFall linear infinite;
         }
+
         @keyframes flowerFall {
             0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
+
         @media (max-width: 480px) {
             .choices { flex-direction: column; align-items: center; gap: 10px; }
             .btn-yes, .btn-no { width: 200px; max-width: none; }
             .bears-container { gap: 20px; max-width: 160px; }
-            .magic-envelope { width: 240px; height: auto; }
+            .magic-envelope { width: 240px; height: 170px; }
             .envelope-img { width: 140px !important; }
             .typing-text { font-size: clamp(1rem, 3vw, 1.2rem); }
         }
+
         @media (max-width: 320px) {
-            .magic-envelope { width: 220px; height: auto; }
+            .magic-envelope { width: 220px; height: 160px; }
         }
     </style>
 </head>
@@ -404,6 +419,7 @@
     <audio id="bgMusic" loop>
         <source src="data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mpeg">
     </audio>
+
     <!-- Page 1: Nhập mật khẩu -->
     <div id="page1" class="page active">
         <div class="container">
@@ -415,15 +431,18 @@
             <p id="error" class="error hidden">Mật khẩu chưa đúng rồi, thử lại nhé 😘</p>
         </div>
     </div>
+
     <!-- Page 2: PHONG BÌ BAY + HỘP QUÀ - ✅ ĐÃ THAY BẰNG unnamed.jpg -->
     <div id="page2" class="page">
         <button class="close-btn" onclick="goBack()">✕</button>
         <div class="container">
             <h1>Chúc mừng Ngày Phụ nữ Việt Nam! 🇻🇳</h1>
+
             <!-- PHONG BÌ BAY - ✅ SỬ DỤNG unnamed.jpg -->
             <div class="envelope-float">
                 <img src="unnamed.jpg" alt="Phong bì thư" class="envelope-img">
             </div>
+
             <!-- HỘP QUÀ -->
             <div class="gift-box" onclick="openGift()">
                 <div class="box">🎁</div>
@@ -431,6 +450,7 @@
             </div>
         </div>
     </div>
+
     <!-- Page 3: Phong bì - ĐÃ XÓA ẢNH, GIỮ NGUYÊN DIV ENVELOPE -->
     <div id="page3" class="page">
         <button class="close-btn" onclick="goBack()">✕</button>
@@ -444,6 +464,7 @@
             </div>
         </div>
     </div>
+
     <!-- Page 4: Thiệp - CHỮ ĐẸP, KHUNG TRẮNG -->
     <div id="page4" class="page">
         <button class="close-btn" onclick="goBack()">✕</button>
@@ -455,25 +476,26 @@
                     </div>
                 </div>
             </div>
-           
+            
             <div class="bears-container">
                 <div class="bear bear-left" id="bearLeft">🐻</div>
                 <div class="bear bear-right" id="bearRight">🐻</div>
             </div>
-           
+            
             <button class="restart" onclick="restart()">💕 Xem lại nào 💕</button>
         </div>
     </div>
+
     <script>
-        const CORRECT_PASSWORD = "1234";
+        const CORRECT_PASSWORD = "2010";
         let noClickCount = 0;
         let typingIndex = 0;
         let currentPage = 1;
-        const messages = [
-            "💖 Chúc bạn luôn xinh đẹp, mạnh mẽ và hạnh phúc mỗi ngày.
-            Cảm ơn vì đã luôn là một phần quan trọng trong cuộc sống này.
-            Mong rằng hôm nay và mãi về sau, bạn luôn nở nụ cười thật tươi 🌷"
-        ].join('\n\n');
+
+       const messages = `💖 Chúc bạn luôn xinh đẹp, mạnh mẽ và hạnh phúc mỗi ngày.
+                        Cảm ơn vì đã luôn là một phần quan trọng trong cuộc sống này.
+                        Mong rằng hôm nay và mãi về sau, bạn luôn nở nụ cười thật tươi 🌷`;
+
         const pages = document.querySelectorAll('.page');
         const passwordInput = document.getElementById('password');
         const errorMsg = document.getElementById('error');
@@ -481,19 +503,23 @@
         const bgMusic = document.getElementById('bgMusic');
         const btnNo = document.querySelector('.btn-no');
         const btnYes = document.querySelector('.btn-yes');
+
         function showPage(pageId) {
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             currentPage = parseInt(pageId.replace('page', ''));
+
             if (pageId === 'page2') {
                 setTimeout(createHeartsFromEnvelope, 1000);
             }
         }
+
         document.addEventListener('DOMContentLoaded', () => {
             playMusic();
             createFloatingHearts();
             passwordInput.focus();
         });
+
         function checkPassword() {
             if (!passwordInput) return;
             const input = passwordInput.value;
@@ -506,25 +532,29 @@
                 setTimeout(() => errorMsg.classList.add('hidden'), 3000);
             }
         }
+
         function openGift() {
             document.querySelector('.box').style.animation = 'none';
             showPage('page3');
         }
+
         function refuseLetter() {
             noClickCount++;
             const scale = Math.max(0.3, 1 - noClickCount * 0.1);
             btnNo.style.transform = `scale(${scale})`;
             btnYes.style.transform = `scale(${1.1 + noClickCount * 0.05})`;
-           
+            
             if (noClickCount >= 8) {
                 alert('Thôi được rồi, em mở thư đi mà 😘💕');
                 openLetter();
             }
         }
+
         function openLetter() {
             showPage('page4');
             startTyping();
         }
+
         function restart() {
             noClickCount = 0;
             btnNo.style.transform = 'scale(1)';
@@ -535,21 +565,23 @@
             showPage('page1');
             passwordInput.focus();
         }
+
         function startTyping() {
             typingIndex = 0;
             setTimeout(() => {
                 document.getElementById('magicEnvelope').classList.add('open');
             }, 500);
-           
+            
             setTimeout(() => {
                 document.getElementById('letterContent').style.opacity = '1';
                 typeWriter(messages, 0);
             }, 2000);
-           
+            
             setTimeout(() => {
                 setupBearHearts();
             }, 2500);
         }
+
         function typeWriter(text, i) {
             if (i < text.length) {
                 typingText.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
@@ -559,55 +591,61 @@
                 createFlowerParticles();
             }
         }
+
         function createHeartsFromEnvelope() {
             const envelope = document.querySelector('.envelope-float');
             if (!envelope) return;
+
             setInterval(() => {
                 const heart = document.createElement('div');
                 heart.className = 'heart-from-envelope';
                 heart.innerHTML = ['💕', '💖', '❤️'][Math.floor(Math.random() * 3)];
-               
+                
                 const rect = envelope.getBoundingClientRect();
                 heart.style.left = (rect.left + rect.width / 2) + 'px';
                 heart.style.top = rect.top + 'px';
-               
+                
                 document.body.appendChild(heart);
                 setTimeout(() => heart.remove(), 3000);
             }, 3000);
         }
+
         function setupBearHearts() {
             const bears = [document.getElementById('bearLeft'), document.getElementById('bearRight')];
-           
+            
             bears.forEach((bear, index) => {
                 bear.onclick = () => releaseHeartFromBear(bear);
-               
+                
                 setInterval(() => {
                     if (Math.random() > 0.3) releaseHeartFromBear(bear);
                 }, 3000 + index * 500);
             });
         }
+
         function releaseHeartFromBear(bear) {
             const heart = document.createElement('div');
             heart.className = 'heart-from-bear';
             heart.innerHTML = ['💕', '💖', '💗', '💝'][Math.floor(Math.random() * 4)];
-           
+            
             const rect = bear.getBoundingClientRect();
             heart.style.left = (rect.left + rect.width / 2) + 'px';
             heart.style.top = (rect.top + rect.height / 2) + 'px';
-           
+            
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 3000);
         }
+
         function goBack() {
             if (currentPage > 1) {
                 showPage(`page${currentPage - 1}`);
             }
         }
+
         function createFlowerParticles() {
             const container = document.createElement('div');
             container.className = 'particles';
             document.getElementById('page4').appendChild(container);
-           
+            
             for (let i = 0; i < 20; i++) {
                 setTimeout(() => {
                     const particle = document.createElement('div');
@@ -620,6 +658,7 @@
                 }, i * 200);
             }
         }
+
         function createFloatingHearts() {
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
@@ -633,10 +672,12 @@
                 }, i * 3000);
             }
         }
+
         function playMusic() {
             bgMusic.volume = 0.3;
             bgMusic.play().catch(() => {});
         }
+
         if (passwordInput) {
             passwordInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') checkPassword();
